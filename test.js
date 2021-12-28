@@ -6,21 +6,12 @@ const fastifyWebhook = require('./')
 const webhooks = [
   {
     path: '/webhook',
-    plugin: async (fastify) => fastify.post('/webhook', (req, res) => 'OK'),
-    create: async () => 'create for /webhook'
+    plugin: async (fastify) => fastify.post('/webhook', (req, res) => 'OK')
   },
   {
     path: '/webhook-2',
     plugin: (fastify, opts, done) => {
       fastify.post('/webhook-2', (req, res) => 'OK - 2')
-      done()
-    },
-    create: async () => 'create for /webhook-2'
-  },
-  {
-    path: '/webhook-no-create',
-    plugin: (fastify, opts, done) => {
-      fastify.post('/webhook-no-create', (req, res) => 'OK - No Create')
       done()
     }
   }
@@ -75,53 +66,6 @@ test('Encapsulates the validation to the webhooks routes only', async (t) => {
   t.is('OK - not webhook', notWebhookSuccess.body)
 })
 
-test('Decorates the namespace with upstream webhook \'create\' methods', async (t) => {
-  const verification = async (fastify, opts) => {}
-  const app = Fastify()
-  app.register(fastifyWebhook, { webhooks, verification })
-
-  await app.ready()
-
-  const { webhooks: creators } = app
-  const webhookCreator1 = creators.get('/webhook')
-  const webhookCreator2 = creators.get('/webhook-2')
-  const created1 = await webhookCreator1()
-  const created2 = await webhookCreator2()
-  t.is('create for /webhook', created1)
-  t.is('create for /webhook-2', created2)
-})
-
-test('Does not decorate the namespace if a \'create\' method is not provided', async (t) => {
-  const verification = async (fastify, opts) => {}
-  const app = Fastify()
-  app.register(fastifyWebhook, { webhooks, verification })
-
-  await app.ready()
-
-  const { webhooks: creators } = app
-  t.false(creators.has('/webhook-no-create'))
-})
-
-test('Decorates the configured namespace with upstream webhook \'create\' methods', async (t) => {
-  const verification = async (fastify, opts) => {}
-  const app = Fastify()
-  app.register(fastifyWebhook, {
-    webhooks,
-    verification,
-    namespace: 'myNamespace'
-  })
-
-  await app.ready()
-
-  const { myNamespace: creators } = app
-  const webhookCreator1 = creators.get('/webhook')
-  const webhookCreator2 = creators.get('/webhook-2')
-  const created1 = await webhookCreator1()
-  const created2 = await webhookCreator2()
-  t.is('create for /webhook', created1)
-  t.is('create for /webhook-2', created2)
-})
-
 test('Each registered plugin instance is encapsulated', async (t) => {
   const verification = async (fastify, opts) => {
     fastify.addHook('preValidation', async (request, response) => {
@@ -139,8 +83,7 @@ test('Each registered plugin instance is encapsulated', async (t) => {
     webhooks: [
       {
         path: '/webhook-3',
-        plugin: async (fastify) => fastify.post('/webhook-3', (req, res) => 'OK - 3'),
-        create: async () => 'create for /webhook-3'
+        plugin: async (fastify) => fastify.post('/webhook-3', (req, res) => 'OK - 3')
       }
     ],
     verification: verification2,
