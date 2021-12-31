@@ -1,6 +1,6 @@
 {
   "name": "fastify-webhooks",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A webhooks plugin for fastify applications",
   "main": "index.js",
   "directories": {
