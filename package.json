@@ -1,6 +1,6 @@
 {
   "name": "@autotelic/fastify-webhooks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A webhooks plugin for fastify applications",
   "main": "index.js",
   "directories": {
